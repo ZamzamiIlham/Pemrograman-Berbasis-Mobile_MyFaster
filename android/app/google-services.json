@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "731475894329",
+    "project_id": "myfaster-ab786",
+    "storage_bucket": "myfaster-ab786.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:731475894329:android:dbd21f55eec884eda2ade8",
+        "android_client_info": {
+          "package_name": "com.ilhamz.MyFaster"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "731475894329-qrbs6mt3ph0snh68j0mdkeg5qvnvokod.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZd38JexvLyIs3Bpv-tSOwFoX7qAUy9QY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "731475894329-qrbs6mt3ph0snh68j0mdkeg5qvnvokod.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
