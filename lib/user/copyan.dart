@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -109,12 +108,8 @@ class _AddPaketState extends State<AddPaket> {
               SizedBox(height: 8),
               if (_locationData != null)
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Distance: ${_locationData!.distanceInMeters} meters',
-                      textAlign: TextAlign.start,
-                    ),
+                    Text('Distance: ${_locationData!.distanceInMeters} meters'),
                   ],
                 ),
               ElevatedButton(
@@ -130,7 +125,6 @@ class _AddPaketState extends State<AddPaket> {
                       String locationReceiver =
                           _controllerLocationReceiver.text;
                       String itemQuantity = _controllerQuantity.text;
-                      double distance = _locationData!.distanceInMeters;
                       //konvert ke int
                       int parsedQuantity = int.tryParse(itemQuantity) ?? 0;
 
@@ -138,7 +132,6 @@ class _AddPaketState extends State<AddPaket> {
                         'user': locationUser,
                         'receiver': locationReceiver,
                         'quantity': itemQuantity,
-                        'distance': distance,
                         'image': imageUrl,
                       };
 

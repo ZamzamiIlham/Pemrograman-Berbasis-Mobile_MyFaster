@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:myfaster/data/provider.dart';
 
 class MyLocationScreen extends StatefulWidget {
   @override
@@ -13,6 +15,7 @@ class _MyLocationScreenState extends State<MyLocationScreen> {
   late Position _currentPosition;
   Set<Marker> _markers = {};
 
+  String _currentAddres = '';
   String _destinationAddress = '';
   double _distanceInMeters = 0.0;
 
@@ -20,20 +23,44 @@ class _MyLocationScreenState extends State<MyLocationScreen> {
   void initState() {
     super.initState();
     _getCurrentLocation();
+    _restoreDestinationAddress();
+  }
+
+  void _restoreDestinationAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? currentAddress = prefs.getString('currentAddress');
+    String? destinationAddress = prefs.getString('destinationAddress');
+    double? distanceInMeters = prefs.getDouble('distanceInMeters');
+    if (currentAddress != null &&
+        destinationAddress != null &&
+        distanceInMeters != null) {
+      setState(() {
+        _currentAddres = currentAddress;
+        _destinationAddress = destinationAddress;
+        _distanceInMeters = distanceInMeters;
+      });
+      LocationData locationData = LocationData(
+        currentAddress: _currentAddres,
+        destinationAddress: _destinationAddress,
+        distanceInMeters: _distanceInMeters,
+      );
+
+      LocationService().updateLocationData(locationData);
+    }
   }
 
   void _getCurrentLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
 
-    // Check if location services are enabled
+    //Melakukan pengecekan jika gps disable
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       print('Location services are disabled.');
       return;
     }
 
-    // Check if location permission is granted
+    //Melakukan pengecekam
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -49,20 +76,38 @@ class _MyLocationScreenState extends State<MyLocationScreen> {
       return;
     }
 
-    // Get the current position
+    //Mencari lokasi saat ini
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    setState(() {
-      _currentPosition = position;
-      _markers.add(
-        Marker(
-          markerId: MarkerId('currentLocation'),
-          position: LatLng(position.latitude, position.longitude),
-        ),
-      );
-    });
 
-    // Move the map camera to the current location
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+      position.latitude,
+      position.longitude,
+    );
+
+    if (placemarks != null && placemarks.isNotEmpty) {
+      Placemark placemark = placemarks[0];
+      String city = placemark.locality ?? '';
+      String state = placemark.administrativeArea ?? '';
+      String country = placemark.country ?? '';
+
+      String currentAddress = ' $city, $state, $country';
+
+      setState(() {
+        _currentPosition = position;
+        _markers.add(
+          Marker(
+            markerId: MarkerId('currentLocation'),
+            position: LatLng(position.latitude, position.longitude),
+          ),
+        );
+        _currentAddres = currentAddress;
+      });
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('currentAddress', _currentAddres);
+    }
+    // Berpindah ke lokasi saat ini
     _mapController.animateCamera(
       CameraUpdate.newCameraPosition(
         CameraPosition(
@@ -86,6 +131,9 @@ class _MyLocationScreenState extends State<MyLocationScreen> {
             '${destinationPlacemark.thoroughfare}, ${destinationPlacemark.locality}';
       });
 
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('destinationAddress', _destinationAddress);
+
       _markers.add(
         Marker(
           markerId: MarkerId('destinationLocation'),
@@ -99,7 +147,7 @@ class _MyLocationScreenState extends State<MyLocationScreen> {
       );
     }
 
-    // Calculate the distance between current location and destination
+    // Menghitung selisis jarak lokasi saat ini dan lokasi tujuan
     double distance = await Geolocator.distanceBetween(
       _currentPosition.latitude,
       _currentPosition.longitude,
@@ -110,6 +158,10 @@ class _MyLocationScreenState extends State<MyLocationScreen> {
     setState(() {
       _distanceInMeters = distance;
     });
+
+    //simpan jarak ketika halaman keluar dari map
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('distanceInMeters', _distanceInMeters);
   }
 
   @override
@@ -146,6 +198,14 @@ class _MyLocationScreenState extends State<MyLocationScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text(
+                    'Lokasi Sekarang: $_currentAddres',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 8),
                   Text(
                     'Lokasi Tujuan: $_destinationAddress',
                     style: TextStyle(
