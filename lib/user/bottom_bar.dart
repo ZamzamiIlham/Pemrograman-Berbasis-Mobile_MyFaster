@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'list_paket.dart';
+import 'profile_page.dart';
 
 class NavBar extends StatefulWidget {
   const NavBar({Key? key}) : super(key: key);
@@ -14,8 +15,7 @@ class _NavBarState extends State<NavBar> {
   static List<Widget> pages = <Widget>[
     const Home(),
     PaketList(),
-    // TODO: Replace with Card3
-    Container(color: Colors.blue)
+    Profile(),
   ];
 // 9
   void _onItemTapped(int index) {

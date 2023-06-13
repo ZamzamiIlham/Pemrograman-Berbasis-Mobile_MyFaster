@@ -38,36 +38,69 @@ class PaketList extends StatelessWidget {
             List<Map> items = documents.map((e) => e.data() as Map).toList();
 
             //Display the list
-
             return ListView.builder(
-                itemCount: items.length,
-                itemBuilder: (BuildContext context, int index) {
-                  //Get the item at this index
-                  Map thisItem = items[index];
-                  //REturn the widget for the list items
-                  return ListTile(
-                    title: Text('${thisItem['user']}'),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('${thisItem['receiver']}'),
-                        Text('${thisItem['quantity']}'),
-                      ],
-                    ),
-                    leading: Container(
-                      height: 80,
-                      width: 80,
-                      child: thisItem.containsKey('image')
-                          ? Image.network('${thisItem['image']}')
-                          : Container(),
-                    ),
-                    /*
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => ItemDetails(thisItem['id'])));
-                    },*/
-                  );
-                });
+              itemCount: items.length,
+              itemBuilder: (BuildContext context, int index) {
+                // Get the item at this index
+                Map thisItem = items[index];
+
+                // Return the widget for the list items
+                return ListTile(
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('${thisItem['nama barang']}',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          )),
+                      SizedBox(height: 8),
+                      Row(children: [
+                        Text('Harga: ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            )),
+                        Text('${thisItem['harga']}'),
+                        SizedBox(width: 4),
+                        Text('IDR',
+                            style: TextStyle(
+                              fontStyle: FontStyle.italic,
+                            ))
+                      ]),
+                      Row(children: [
+                        Text('Berat: ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            )),
+                        Text(
+                          '${thisItem['quantity']}',
+                        ),
+                        SizedBox(width: 4),
+                        Text('KG',
+                            style: TextStyle(
+                              fontStyle: FontStyle.italic,
+                            ))
+                      ])
+                    ],
+                  ),
+                  leading: Container(
+                    height: 100,
+                    width: 80,
+                    child: thisItem.containsKey('image')
+                        ? Image.network(
+                            '${thisItem['image']}',
+                            fit: BoxFit.cover,
+                          )
+                        : Container(),
+                  ),
+                  /*
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => ItemDetails(thisItem['id'])));
+              },*/
+                );
+              },
+            );
           }
 
           //Show loader

@@ -4,13 +4,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 class LocationData {
   final String currentAddress;
   final String destinationAddress;
-  final double distanceInMeters;
+  double distanceInMeters;
 
   LocationData({
     required this.currentAddress,
     required this.destinationAddress,
     required this.distanceInMeters,
   });
+
+  void setDistance(double distance) {
+    distanceInMeters = distance;
+  }
 }
 
 class LocationService {
@@ -48,5 +52,11 @@ class LocationService {
         distanceInMeters: distanceInMeters,
       );
     }
+  }
+
+  Future<double> getTotalPrice() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    double totalPrice = prefs.getDouble('totalPrice') ?? 0;
+    return totalPrice;
   }
 }

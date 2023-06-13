@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/gestures.dart';
 import 'package:myfaster/theme/theme.dart';
 import 'package:myfaster/user/bottom_bar.dart';
@@ -166,6 +167,10 @@ class _LoginPageState extends State<LoginPage> {
                         String result =
                             await _authService.logIn(email, password);
                         if (result == 'success') {
+                          // Login berhasil, simpan username ke dalam shared preferences
+                          SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+                          prefs.setString('username', email);
                           // Login berhasil, alihkan ke halaman berikutnya
                           Navigator.pushReplacement(
                               context,

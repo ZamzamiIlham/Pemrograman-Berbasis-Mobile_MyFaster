@@ -14,9 +14,13 @@ class AddPaket extends StatefulWidget {
 }
 
 class _AddPaketState extends State<AddPaket> {
+  TextEditingController _controllerSenderName = TextEditingController();
+  TextEditingController _controllerReceiverName = TextEditingController();
+  TextEditingController _controllerItemName = TextEditingController();
   TextEditingController _controllerLocationUser = TextEditingController();
   TextEditingController _controllerLocationReceiver = TextEditingController();
   TextEditingController _controllerQuantity = TextEditingController();
+  double _totalPrice = 0.0;
 
   GlobalKey<FormState> key = GlobalKey();
 
@@ -35,11 +39,15 @@ class _AddPaketState extends State<AddPaket> {
 
   Future<void> _getLocationData() async {
     await LocationService().restoreLocationData();
+    double totalPrice = await LocationService().getTotalPrice();
     setState(() {
       _locationData = LocationService().locationData;
       _controllerLocationUser.text = _locationData?.currentAddress ?? '';
       _controllerLocationReceiver.text =
           _locationData?.destinationAddress ?? '';
+      _totalPrice = double.parse(totalPrice.toStringAsFixed(2));
+      _locationData?.setDistance(
+          double.parse(_locationData!.distanceInMeters.toStringAsFixed(2)));
     });
   }
 
@@ -57,7 +65,7 @@ class _AddPaketState extends State<AddPaket> {
             children: [
               IconButton(
                   onPressed: () async {
-                    /*Step 1: Pick image*/
+                    /*Upload Image*/
                     ImagePicker imagePicker = ImagePicker();
                     XFile? file =
                         await imagePicker.pickImage(source: ImageSource.camera);
@@ -65,7 +73,7 @@ class _AddPaketState extends State<AddPaket> {
 
                     if (file == null) return;
 
-                    /*Step 2: Upload to Firebase storage*/
+                    /*Up Firebase*/
                     Reference referenceRoot = FirebaseStorage.instance.ref();
                     Reference referenceDirImages =
                         referenceRoot.child('images');
@@ -83,12 +91,16 @@ class _AddPaketState extends State<AddPaket> {
                   },
                   icon: Icon(Icons.camera_alt)),
               TextFormField(
-                controller: _controllerLocationUser,
-                decoration: InputDecoration(labelText: 'Alamat Saat Ini'),
+                controller: _controllerSenderName,
+                decoration: InputDecoration(labelText: 'Nama pengirim'),
               ),
               TextFormField(
-                controller: _controllerLocationReceiver,
-                decoration: InputDecoration(labelText: 'Alamat Tujuan'),
+                controller: _controllerReceiverName,
+                decoration: InputDecoration(labelText: 'Nama penerima'),
+              ),
+              TextFormField(
+                controller: _controllerItemName,
+                decoration: InputDecoration(labelText: 'Nama barang'),
               ),
               TextFormField(
                 controller: _controllerQuantity,
@@ -106,13 +118,26 @@ class _AddPaketState extends State<AddPaket> {
                   return null;
                 },
               ),
+              TextFormField(
+                controller:
+                    TextEditingController(text: _totalPrice.toStringAsFixed(2)),
+                decoration: InputDecoration(labelText: 'Harga'),
+              ),
+              TextFormField(
+                controller: _controllerLocationUser,
+                decoration: InputDecoration(labelText: 'Alamat saat Ini'),
+              ),
+              TextFormField(
+                controller: _controllerLocationReceiver,
+                decoration: InputDecoration(labelText: 'Alamat tujuan'),
+              ),
               SizedBox(height: 8),
               if (_locationData != null)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Distance: ${_locationData!.distanceInMeters} meters',
+                      'Distance: ${_locationData!.distanceInMeters.toStringAsFixed(2)} meters',
                       textAlign: TextAlign.start,
                     ),
                   ],
@@ -126,6 +151,9 @@ class _AddPaketState extends State<AddPaket> {
                     }
 
                     if (key.currentState!.validate()) {
+                      String senderName = _controllerSenderName.text;
+                      String receiverName = _controllerReceiverName.text;
+                      String itemName = _controllerItemName.text;
                       String locationUser = _controllerLocationUser.text;
                       String locationReceiver =
                           _controllerLocationReceiver.text;
@@ -133,12 +161,17 @@ class _AddPaketState extends State<AddPaket> {
                       double distance = _locationData!.distanceInMeters;
                       //konvert ke int
                       int parsedQuantity = int.tryParse(itemQuantity) ?? 0;
+                      double totalPrice = _totalPrice;
 
                       Map<String, dynamic> dataToSend = {
+                        'nama pengirim': senderName,
+                        'nama penerima': receiverName,
+                        'nama barang': itemName,
+                        'quantity': itemQuantity,
                         'user': locationUser,
                         'receiver': locationReceiver,
-                        'quantity': itemQuantity,
                         'distance': distance,
+                        'harga': _totalPrice,
                         'image': imageUrl,
                       };
 

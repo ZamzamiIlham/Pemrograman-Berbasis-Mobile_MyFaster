@@ -8,6 +8,7 @@ import 'login_page.dart';
 import 'package:myfaster/theme/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:myfaster/data/auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Registration extends StatefulWidget {
   @override
@@ -25,6 +26,12 @@ class _RegistrationState extends State<Registration> {
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+
+  Future<void> _saveUserData(String username, String email) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('username', username);
+    await prefs.setString('email', email);
+  }
 
   @override
   Widget build(BuildContext context) {

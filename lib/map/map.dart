@@ -155,6 +155,12 @@ class _MyLocationScreenState extends State<MyLocationScreen> {
       destinationCoordinates.longitude,
     );
 
+    // Menghitung harga berdasarkan jarak
+    double pricePerKm = 2500; // Harga per kilometer
+    double totalPrice = (distance / 1000) * pricePerKm; // Harga total
+    totalPrice = double.parse(
+        totalPrice.toStringAsFixed(2)); // Batasi 2 angka di belakang koma
+
     setState(() {
       _distanceInMeters = distance;
     });
@@ -162,6 +168,7 @@ class _MyLocationScreenState extends State<MyLocationScreen> {
     //simpan jarak ketika halaman keluar dari map
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setDouble('distanceInMeters', _distanceInMeters);
+    await prefs.setDouble('totalPrice', totalPrice);
   }
 
   @override
@@ -219,6 +226,23 @@ class _MyLocationScreenState extends State<MyLocationScreen> {
                     style: TextStyle(
                       fontSize: 16,
                     ),
+                  ),
+                  SizedBox(height: 8),
+                  FutureBuilder<SharedPreferences>(
+                    future: SharedPreferences.getInstance(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        SharedPreferences prefs = snapshot.data!;
+                        return Text(
+                          'Harga: ${prefs.getDouble('totalPrice')?.toStringAsFixed(2) ?? '0'} IDR',
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        );
+                      } else {
+                        return SizedBox();
+                      }
+                    },
                   ),
                 ],
               ),
