@@ -45,4 +45,18 @@ class AuthService {
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
   }
+
+  Future<String> changePassword(String newPassword) async {
+    try {
+      User? user = _firebaseAuth.currentUser;
+      if (user != null) {
+        await user.updatePassword(newPassword);
+        return 'success';
+      } else {
+        return 'User not found';
+      }
+    } catch (e) {
+      return e.toString();
+    }
+  }
 }

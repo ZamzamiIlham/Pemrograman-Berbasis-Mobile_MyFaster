@@ -171,6 +171,7 @@ class _LoginPageState extends State<LoginPage> {
                           SharedPreferences prefs =
                               await SharedPreferences.getInstance();
                           prefs.setString('username', email);
+                          prefs.setString('password', password);
                           // Login berhasil, alihkan ke halaman berikutnya
                           Navigator.pushReplacement(
                               context,

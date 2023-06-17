@@ -29,6 +29,8 @@ class _AddPaketState extends State<AddPaket> {
 
   String imageUrl = '';
 
+  String _selectedPaymentMethod = 'Cash';
+
   //lokasi dari provider
   LocationData? _locationData;
   @override
@@ -57,7 +59,7 @@ class _AddPaketState extends State<AddPaket> {
       appBar: AppBar(
         title: Text('Kirim Paket'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(8.0),
         child: Form(
           key: key,
@@ -142,6 +144,28 @@ class _AddPaketState extends State<AddPaket> {
                     ),
                   ],
                 ),
+              DropdownButtonFormField<String>(
+                value: _selectedPaymentMethod,
+                decoration: InputDecoration(
+                  labelText: 'Metode Pembayaran',
+                ),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedPaymentMethod = newValue!;
+                  });
+                },
+                items: <String>[
+                  'Cash',
+                  'Credit Card',
+                  'Bank Transfer',
+                  'E-Wallet'
+                ].map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
               ElevatedButton(
                   onPressed: () async {
                     if (imageUrl.isEmpty) {
@@ -173,6 +197,7 @@ class _AddPaketState extends State<AddPaket> {
                         'distance': distance,
                         'harga': _totalPrice,
                         'image': imageUrl,
+                        'metode pembayaran': _selectedPaymentMethod,
                       };
 
                       _reference.add(dataToSend);

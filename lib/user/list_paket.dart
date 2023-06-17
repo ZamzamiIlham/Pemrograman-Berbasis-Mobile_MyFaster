@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'tambah_paket.dart';
+import 'detail_paket.dart';
 
 class PaketList extends StatelessWidget {
   PaketList({Key? key}) : super(key: key) {
@@ -93,11 +94,12 @@ class PaketList extends StatelessWidget {
                           )
                         : Container(),
                   ),
-                  /*
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => ItemDetails(thisItem['id'])));
-              },*/
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          ItemDetails(Map<String, dynamic>.from(thisItem)),
+                    ));
+                  },
                 );
               },
             );
