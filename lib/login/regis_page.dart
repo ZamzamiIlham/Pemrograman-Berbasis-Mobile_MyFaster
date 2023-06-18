@@ -151,13 +151,6 @@ class _RegistrationState extends State<Registration> {
                               color: Colors.white),
                         ),
                       ),
-                      /*onPressed: () {
-                        //After successful login we will redirect to profile page. Let's create profile page now
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginPage()));
-                      },*/
                       onPressed: () async {
                         String username = _usernameController.text.trim();
                         String email = _emailController.text.trim();

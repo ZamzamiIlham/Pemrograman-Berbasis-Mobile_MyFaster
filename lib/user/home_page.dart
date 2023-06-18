@@ -4,6 +4,7 @@ import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:myfaster/theme/theme.dart';
 import 'package:myfaster/map/map.dart';
 import 'package:myfaster/user/tambah_paket.dart';
+import 'tarif_page.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -156,15 +157,6 @@ class _HomeState extends State<Home> {
                               MaterialPageRoute(
                                   builder: (context) => MyLocationScreen()),
                             );
-                            /*setState(() {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return ThemeHelper().alartDialog("Pakeet",
-                                      "Anda mengklik tombol lokasi", context => );
-                                },
-                              );
-                            });*/
                           },
                           child: Container(
                             height: 50,
@@ -201,36 +193,45 @@ class _HomeState extends State<Home> {
                       const SizedBox(width: 10.0),
                       //--------CEK TARIF----------------//
                       Expanded(
-                        child: Container(
-                          height: 50,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(13),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey,
-                                blurRadius: 5,
-                                offset: Offset(0, 2),
-                              )
-                            ],
-                          ),
-                          padding: EdgeInsets.all(10.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                'assets/images/cek_lokasi.png',
+                        child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PaymentInfoPage()),
+                              );
+                            },
+                            child: Container(
+                              height: 50,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(13),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey,
+                                    blurRadius: 5,
+                                    offset: Offset(0, 2),
+                                  )
+                                ],
                               ),
-                              const SizedBox(width: 5.0),
-                              Text(
-                                "Tarif",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w500),
+                              padding: EdgeInsets.all(10.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    'assets/images/cek_lokasi.png',
+                                  ),
+                                  const SizedBox(width: 5.0),
+                                  Text(
+                                    "Tarif",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
+                            )),
                       ),
                       const SizedBox(width: 10.0),
                       //--------KIRIM PAKET----------------//
@@ -279,7 +280,34 @@ class _HomeState extends State<Home> {
                   ),
                 ],
               ),
-            )
+            ),
+            //================================IKLAN =========================//
+            const SizedBox(height: 30.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: PaddingHorizonal),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Image.asset(
+                        'assets/images/sub_logo.png',
+                      ),
+                      const SizedBox(width: 5.0),
+                      Text(
+                        'Bantuan My Faster',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w600),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 10.0),
+                  Image.asset(
+                    'assets/images/cp.png',
+                    fit: BoxFit.contain,
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

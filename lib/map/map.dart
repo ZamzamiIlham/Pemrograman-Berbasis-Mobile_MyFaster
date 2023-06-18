@@ -176,7 +176,9 @@ class _MyLocationScreenState extends State<MyLocationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Location'),
+        foregroundColor: Colors.white,
+        title: Text('My Location', style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.orange,
       ),
       body: Stack(
         children: [

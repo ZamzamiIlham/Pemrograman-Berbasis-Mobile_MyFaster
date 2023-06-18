@@ -19,7 +19,9 @@ class PaketList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Riwayat Paket'),
+        foregroundColor: Colors.white,
+        title: Text('Riwayat Paket', style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.orange,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _stream,
@@ -45,61 +47,87 @@ class PaketList extends StatelessWidget {
                 // Get the item at this index
                 Map thisItem = items[index];
 
-                // Return the widget for the list items
-                return ListTile(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('${thisItem['nama barang']}',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          )),
-                      SizedBox(height: 8),
-                      Row(children: [
-                        Text('Harga: ',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            )),
-                        Text('${thisItem['harga']}'),
-                        SizedBox(width: 4),
-                        Text('IDR',
-                            style: TextStyle(
-                              fontStyle: FontStyle.italic,
-                            ))
-                      ]),
-                      Row(children: [
-                        Text('Berat: ',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            )),
-                        Text(
-                          '${thisItem['quantity']}',
-                        ),
-                        SizedBox(width: 4),
-                        Text('KG',
-                            style: TextStyle(
-                              fontStyle: FontStyle.italic,
-                            ))
-                      ])
-                    ],
-                  ),
-                  leading: Container(
-                    height: 100,
-                    width: 80,
-                    child: thisItem.containsKey('image')
-                        ? Image.network(
-                            '${thisItem['image']}',
-                            fit: BoxFit.cover,
-                          )
-                        : Container(),
-                  ),
+                return InkWell(
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) =>
                           ItemDetails(Map<String, dynamic>.from(thisItem)),
                     ));
                   },
+                  child: Container(
+                    child: Card(
+                      child: Container(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              height: 100,
+                              width: 80,
+                              child: thisItem.containsKey('image')
+                                  ? Image.network(
+                                      '${thisItem['image']}',
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Container(),
+                            ),
+                            SizedBox(width: 20),
+                            Expanded(
+                              child: Container(
+                                margin: EdgeInsets.only(top: 5),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    Text(
+                                      '${thisItem['nama barang']}',
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    SizedBox(height: 15),
+                                    Row(
+                                      children: <Widget>[
+                                        Icon(Icons.line_weight, size: 12),
+                                        SizedBox(width: 5),
+                                        Text(
+                                            'Berat: ${thisItem['quantity']} Kg ',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            )),
+                                      ],
+                                    ),
+                                    SizedBox(height: 5),
+                                    Row(
+                                      children: <Widget>[
+                                        Icon(Icons.price_change, size: 12),
+                                        SizedBox(width: 5),
+                                        Text('Harga: ${thisItem['harga']} Rp',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            )),
+                                      ],
+                                    ),
+                                    SizedBox(height: 5),
+                                    Row(
+                                      children: <Widget>[
+                                        Icon(Icons.motorcycle, size: 12),
+                                        SizedBox(width: 5),
+                                        Text(
+                                            'Jarak: ${thisItem['distance']} Km',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            )),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 );
               },
             );

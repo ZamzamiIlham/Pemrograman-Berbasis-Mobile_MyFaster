@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'package:intl/intl.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,7 +21,9 @@ class _AddPaketState extends State<AddPaket> {
   TextEditingController _controllerLocationUser = TextEditingController();
   TextEditingController _controllerLocationReceiver = TextEditingController();
   TextEditingController _controllerQuantity = TextEditingController();
+  TextEditingController _controllerPickupDate = TextEditingController();
   double _totalPrice = 0.0;
+  DateTime? _selectedDate;
 
   GlobalKey<FormState> key = GlobalKey();
 
@@ -37,6 +40,22 @@ class _AddPaketState extends State<AddPaket> {
   void initState() {
     super.initState();
     _getLocationData();
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() {
+        _selectedDate = picked;
+        _controllerPickupDate.text =
+            DateFormat('yyyy-MM-dd').format(_selectedDate!);
+      });
+    }
   }
 
   Future<void> _getLocationData() async {
@@ -57,7 +76,9 @@ class _AddPaketState extends State<AddPaket> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Kirim Paket'),
+        foregroundColor: Colors.white,
+        title: Text('Kirim Paket', style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.orange,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(8.0),
@@ -65,6 +86,7 @@ class _AddPaketState extends State<AddPaket> {
           key: key,
           child: Column(
             children: [
+              /*BARUUUU*/
               IconButton(
                   onPressed: () async {
                     /*Upload Image*/
@@ -103,6 +125,14 @@ class _AddPaketState extends State<AddPaket> {
               TextFormField(
                 controller: _controllerItemName,
                 decoration: InputDecoration(labelText: 'Nama barang'),
+              ),
+              TextFormField(
+                controller: _controllerPickupDate,
+                onTap: () {
+                  _selectDate(context);
+                },
+                readOnly: true,
+                decoration: InputDecoration(labelText: 'Tanggal Penjemputan'),
               ),
               TextFormField(
                 controller: _controllerQuantity,
@@ -154,12 +184,8 @@ class _AddPaketState extends State<AddPaket> {
                     _selectedPaymentMethod = newValue!;
                   });
                 },
-                items: <String>[
-                  'Cash',
-                  'Credit Card',
-                  'Bank Transfer',
-                  'E-Wallet'
-                ].map<DropdownMenuItem<String>>((String value) {
+                items: <String>['Cash', 'Bank Transfer', 'E-Wallet']
+                    .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
@@ -167,6 +193,14 @@ class _AddPaketState extends State<AddPaket> {
                 }).toList(),
               ),
               ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Color.fromARGB(255, 243, 100, 33),
+                    onPrimary: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  ),
                   onPressed: () async {
                     if (imageUrl.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -198,6 +232,7 @@ class _AddPaketState extends State<AddPaket> {
                         'harga': _totalPrice,
                         'image': imageUrl,
                         'metode pembayaran': _selectedPaymentMethod,
+                        'tanggalPenjemputan': _selectedDate,
                       };
 
                       _reference.add(dataToSend);

@@ -19,6 +19,9 @@ class _ProfileState extends State<Profile> {
 
   AuthService _authService = AuthService();
 
+  TextEditingController _usernameController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -32,11 +35,16 @@ class _ProfileState extends State<Profile> {
       username = prefs.getString('username') ?? '';
       password = prefs.getString('password') ?? '';
 
+      _passwordController.text = password;
+
       // Cek apakah ada path gambar tersimpan
       final imagePath = prefs.getString('profileImage');
       if (imagePath != null) {
         profileImage = File(imagePath);
       }
+
+      _usernameController.text = username;
+      _passwordController.text = password;
     });
   }
 
@@ -54,6 +62,10 @@ class _ProfileState extends State<Profile> {
   Future<void> changePassword(String newPassword) async {
     String result = await _authService.changePassword(newPassword);
     if (result == 'success') {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('password',
+          newPassword); // Perbarui data password di shared preferences
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -69,6 +81,8 @@ class _ProfileState extends State<Profile> {
                     password =
                         newPassword; // Perbarui nilai password setelah berhasil diubah
                   });
+                  _passwordController.text =
+                      newPassword; // Perbarui nilai pada controller TextFormField
                 },
               ),
             ],
@@ -144,28 +158,69 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        foregroundColor: Colors.white,
+        title: Text('Profile', style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.orange,
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            SizedBox(height: 20),
             if (profileImage != null) ...[
               CircleAvatar(
-                radius: 50,
+                radius: 80,
                 backgroundImage: FileImage(profileImage!),
               ),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _uploadProfile,
-                child: Text('Upload Profile'),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.orange,
+                  onPrimary: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.upload),
+                    SizedBox(width: 8),
+                    Text(
+                      'Upload Profile',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  ],
+                ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 80),
             ],
-            Text('Welcome: $username'),
+            TextFormField(
+              controller: _usernameController,
+              readOnly: true,
+              decoration: InputDecoration(
+                labelText: 'Email',
+                contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.orange),
+                ),
+              ),
+            ),
             SizedBox(height: 20),
-            Text('Password: $password'),
-            ElevatedButton(
+            TextFormField(
+              controller: _passwordController,
+              readOnly: true,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.orange),
+                ),
+              ),
+            ),
+            TextButton(
               onPressed: () {
                 showDialog(
                   context: context,
@@ -204,7 +259,25 @@ class _ProfileState extends State<Profile> {
             ),
             ElevatedButton(
               onPressed: logout,
-              child: Text('Logout'),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.orange,
+                onPrimary: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.logout),
+                  SizedBox(width: 8),
+                  Text(
+                    'Logout',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
